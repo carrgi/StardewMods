@@ -11,6 +11,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Characters;
+using StardewValley.GameData.Buildings;
 using StardewValley.GameData.FishPond;
 using SFarmer = StardewValley.Farmer;
 using SObject = StardewValley.Object;
@@ -418,11 +419,13 @@ namespace Pathoschild.Stardew.LookupAnything
             // building recipes
             recipes.AddRange(
                 from entry in metadata.BuildingRecipes
-                let building = new BluePrint(entry.BuildingKey)
+                let buildingData = Game1.buildingsData.TryGetValue(entry.BuildingKey, out BuildingData data)
+                    ? data
+                    : null
                 select new RecipeModel(
                     key: null,
                     type: RecipeType.BuildingInput,
-                    displayType: building.displayName,
+                    displayType: TokenParser.ParseText(buildingData?.Name) ?? entry.BuildingKey,
                     ingredients: entry.Ingredients.Select(p => new RecipeIngredientModel(p.Key, p.Value)),
                     item: ingredient => this.CreateRecipeItem(ingredient?.QualifiedItemId, entry.Output, null),
                     isKnown: () => true,

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Pathoschild.Stardew.Common;
 using Pathoschild.Stardew.LookupAnything.Framework.Data;
@@ -53,16 +52,8 @@ namespace Pathoschild.Stardew.LookupAnything.Framework.Lookups.Buildings
             this.SourceRectangle = sourceRectangle;
 
             // get name/description from blueprint if available
-            try
-            {
-                BluePrint blueprint = new BluePrint(building.buildingType.Value);
-                this.Name = blueprint.displayName;
-                this.Description = blueprint.description;
-            }
-            catch (ContentLoadException)
-            {
-                // use default values
-            }
+            this.Name = TokenParser.ParseText(building.buildingData?.Name) ?? this.Name;
+            this.Description = TokenParser.ParseText(building.buildingData?.Description) ?? this.Description;
         }
 
         /// <summary>Get the data to display for this subject.</summary>
@@ -182,9 +173,9 @@ namespace Pathoschild.Stardew.LookupAnything.Framework.Lookups.Buildings
                         break;
 
                     // mill
-                    case Mill mill:
-                        yield return new ItemIconListField(this.GameHelper, I18n.Building_OutputProcessing(), mill.input.Value?.GetItemsForPlayer(Game1.player.UniqueMultiplayerID), showStackSize: true);
-                        yield return new ItemIconListField(this.GameHelper, I18n.Building_OutputReady(), mill.output.Value?.GetItemsForPlayer(Game1.player.UniqueMultiplayerID), showStackSize: true);
+                    case not null when building.buildingType.Value == "Mill":
+                        yield return new ItemIconListField(this.GameHelper, I18n.Building_OutputProcessing(), building.GetBuildingChest("Input")?.GetItemsForPlayer(Game1.player.UniqueMultiplayerID), showStackSize: true);
+                        yield return new ItemIconListField(this.GameHelper, I18n.Building_OutputReady(), building.GetBuildingChest("Output")?.GetItemsForPlayer(Game1.player.UniqueMultiplayerID), showStackSize: true);
                         break;
 
                     // silo
@@ -194,7 +185,7 @@ namespace Pathoschild.Stardew.LookupAnything.Framework.Lookups.Buildings
                             Farm farm = Game1.getFarm();
                             int siloCount = Utility.numSilos();
                             int hayCount = farm.piecesOfHay.Value;
-                            int maxHay = Math.Max(farm.piecesOfHay.Value, siloCount * 240);
+                            int maxHay = Math.Max(farm.piecesOfHay.Value, farm.GetHayCapacity());
                             yield return new GenericField(
                                 I18n.Building_StoredHay(),
                                 siloCount == 1

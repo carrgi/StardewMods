@@ -128,11 +128,11 @@ namespace Pathoschild.Stardew.DataLayers.Layers.Coverage
         private bool IsBuildingHut()
         {
             // vanilla menu
-            if (Game1.activeClickableMenu is CarpenterMenu carpenterMenu && carpenterMenu.CurrentBlueprint.name == "Junimo Hut")
+            if (Game1.activeClickableMenu is CarpenterMenu carpenterMenu && carpenterMenu.Blueprint.Id == "Junimo Hut")
                 return true;
 
             // Pelican Fiber menu
-            if (this.Mods.PelicanFiber.IsLoaded && this.Mods.PelicanFiber.GetBuildMenuBlueprint()?.name == "Junimo Hut")
+            if (this.Mods.PelicanFiber.IsLoaded && this.Mods.PelicanFiber.GetBuildMenuBlueprint()?.Id == "Junimo Hut")
                 return true;
 
             return false;
