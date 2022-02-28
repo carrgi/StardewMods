@@ -72,16 +72,13 @@ namespace Pathoschild.Stardew.LookupAnything.Framework.ItemScanning
                 }
 
                 // building output
-                if (location is BuildableGameLocation buildableLocation)
+                foreach (var building in location.buildings)
                 {
-                    foreach (var building in buildableLocation.buildings)
-                    {
-                        if (building is JunimoHut hut)
-                            this.ScanAndTrack(tracked: items, itemsSeen: itemsSeen, root: hut.output.Value, parent: hut, includeRoot: false);
+                    if (building is JunimoHut hut)
+                        this.ScanAndTrack(tracked: items, itemsSeen: itemsSeen, root: hut.output.Value, parent: hut, includeRoot: false);
 
-                        foreach (Chest chest in building.buildingChests)
-                            this.ScanAndTrack(tracked: items, itemsSeen: itemsSeen, root: chest, parent: building, includeRoot: false);
-                    }
+                    foreach (Chest chest in building.buildingChests)
+                        this.ScanAndTrack(tracked: items, itemsSeen: itemsSeen, root: chest, parent: building, includeRoot: false);
                 }
 
                 // map objects
